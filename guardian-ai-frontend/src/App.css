@@ -1,38 +1,211 @@
+/* Base Styles */
+.navbar {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.navbar-brand span:last-child {
+  margin-left: 10px;
+  font-size: 0.8em;
+  font-weight: normal;
+}
+
+.navbar-tabs button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 4px;
+}
+
+.navbar-tabs button:hover {
+  background-color: #555;
+}
+
+.navbar-tabs button.active {
+  background-color: #007bff;
+}
+
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+}
+.login {
+  margin: 50px;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.main-container {
+  display: flex;
+  flex-grow: 1; /* This will make sure that the main container takes up all available space */
+}
+
+.map-container {
+  flex-grow: 1;
+  margin-right: 0;
+}
+
+.side-panel {
+  width: 400px; /* adjust the width if necessary */
+  background-color: #f7f7f7; /* LiveuMap's side panel background color */
+  font-family: "Open Sans", sans-serif; /* This is a common font, similar to what's used on many panels */
+  color: #333; /* Text color */
+  overflow-y: auto;
+  height: 100vh;
+  border-right: 0px solid #ccc; /* if there's a border in the LiveuMap side panel */
+  padding: 0px; /* Add padding to match LiveuMap's spacing */
+}
+
+.news-item {
+  background-color: white; /* Background of each news item */
+  padding: 0px; /* Padding inside each news item */
+  margin-bottom: 10px; /* Space between news items */
+  border-radius: 4px; /* Rounded corners like LiveuMap */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+
+.news-item:hover {
+  background-color: #f9f9f9; /* Slightly different background on hover */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+}
+
+.news-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0px; /* Adjust as necessary */
+}
+
+.publish-date {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.category-icon {
+  /* Ensure the icon is centered within its flex item */
+  margin:auto;
+  width: 22px; /* Adjust as necessary */
+  height:auto;
+}
+
+.source-link-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Aligns the source link to the right */
+  flex-grow: 1;
+}
+
+.source-link {
+  display: flex;
+  align-items: center;
+  /* Ensure there's space between the text and icon */
+  gap: 5px;
+}
+
+.source-icon {
   color: white;
+  width: 12px;
+  height: auto;
 }
 
-.App-link {
-  color: #61dafb;
+.chat-form {
+  display: flex;
+  margin-bottom: 20px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chat-input {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+}
+
+/* Chat component specific styles */
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 10px;
+  height: calc(100vh - 200px); /* Adjusted for dynamic content above or below the chat */
+}
+
+.message {
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow-wrap: break-word; /* Allows long words to be broken and wrap to the next line */
+  word-break: break-word; /* Deprecated in favor of overflow-wrap, but still used for compatibility */
+  max-width: calc(100% - 20px); /* Adjust based on the container's padding */
+  display: inline-block; /* Ensures the element can grow in its container */
+}
+
+.user-message {
+  background-color: blue;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.api-message {
+  background-color: white;
+  color: black;
+  align-self: flex-start;
+  border-bottom-left-radius: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.chat-form {
+  display: flex;
+  margin-top: 20px;
+}
+
+.chat-input, .send-button {
+  border-radius: 20px;
+}
+
+.send-button {
+  margin-left: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.send-button:hover {
+  background-color: #0056b3;
+}
+.map-wrapper {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+
+.filter-container {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
 }
