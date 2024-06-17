@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import NavBar from './components/NavBar';
@@ -22,7 +23,7 @@ function App() {
     const [sourcesCount, setSourcesCount] = useState([]);
     const [locationsCount, setLocationsCount] = useState([]);
     const [coordinates, setCoordinates] = useState(null);
-    const [pickingMode, setPickingMode] = useState(false); // Add state for picking mode
+    const [pickingMode, setPickingMode] = useState(false);
     const { getCurrentUserToken } = useAuth();
 
     useEffect(() => {
@@ -109,6 +110,7 @@ function App() {
             setTotalNewsCount(countResponse.data?.news_count || 0);
 
             const newNewsItems = newsResponse.data || [];
+            console.log('New news items:', newNewsItems);
             setNewsItems(newNewsItems);
             setHasMore(newNewsItems.length > 0);
             setPage(0);
@@ -162,35 +164,23 @@ function App() {
                         locationMarkers={locationMarkers}
                         selectedNewsItem={selectedNewsItem}
                         setSelectedNewsItem={setSelectedNewsItem}
-                        setCoordinates={setCoordinates} // Pass setCoordinates to MapComponent
-                        pickingMode={pickingMode} // Pass pickingMode to MapComponent
-                        setPickingMode={setPickingMode} // Pass setPickingMode to MapComponent
+                        setCoordinates={setCoordinates}
+                        pickingMode={pickingMode}
+                        setPickingMode={setPickingMode}
                         coordinates={coordinates}
                     />
                 </div>
-                <div className="side-panel">
+                <div className="side-panel-logo-container">
                     <SidePanel
-                        activePanel={activePanel}
                         newsItems={newsItems}
-                        fetchLocationCoords={fetchLocationCoords}
-                        fetchNextPage={fetchNextPage}
-                        hasMore={hasMore}
-                        totalNewsCount={totalNewsCount}
-                        setSelectedNewsItem={setSelectedNewsItem}
-                        selectedNewsItem={selectedNewsItem}
-                        currentFilters={currentFilters}
-                        categoriesCount={categoriesCount}
-                        sourcesCount={sourcesCount}
-                        locationsCount={locationsCount}
-                        loading={loading}
                     />
                 </div>
                 <div>
                     <FilterButton
                         updateNewsFeed={handleFilterApply}
                         coordinates={coordinates}
-                        pickingMode={pickingMode} // Pass pickingMode to FilterButton
-                        setPickingMode={setPickingMode} // Pass setPickingMode to FilterButton
+                        pickingMode={pickingMode}
+                        setPickingMode={setPickingMode}
                     />
                 </div>
             </div>

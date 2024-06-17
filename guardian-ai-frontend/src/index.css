@@ -1,18 +1,29 @@
-/*index.css*/
-@import "~leaflet/dist/leaflet.css";
-
-/* Add other global styles below */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-  "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-  sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
+/* index.css */
+.side-panel-logo-container {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap; /* Prevent text wrapping */
+  height: 40vh; /* Set height for the side panel */
+  background-color: #f7f7f7;
+  padding: 10px;
+  scroll-behavior: smooth; /* Smooth scrolling */
 }
 
-.custom-container {
-  max-width: none !important; /* Override the max-width property */
+.logo-item {
+  display: inline-block;
+  margin-right: 20px;
+  text-align: center; /* Center the text under the logo */
+}
+
+.logo-image {
+  width: 50px; /* Set logo size */
+  height: 50px;
+  object-fit: contain;
+}
+
+.logo-label {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #333;
 }

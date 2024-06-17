@@ -1,139 +1,95 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Tooltip, Polygon, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import MarkerDetailCard from './MarkerDetailCard';
+import React, { useState, useEffect, useCallback } from 'react';
+import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import Box from '@mui/material/Box';
+import MarkerDetailCard from './MarkerDetailCard';
 
-const initialCenter = [31.514722, 34.454167];
-const initialZoom = 10;
+const initialCenter = { lat: 32.6953, lng: 73.7353 };
+const initialZoom = 2;
+
+const containerStyle = {
+    width: '100%',
+    height: '100%'
+};
 
 const MapComponent = ({ locationPolygons, locationMarkers, selectedNewsItem, setSelectedNewsItem, setCoordinates, pickingMode, coordinates }) => {
-    const mapRef = useRef(null);
     const [selectedMarker, setSelectedMarker] = useState(null);
+    const [map, setMap] = useState(null);
+
+    const onLoad = useCallback(function callback(map) {
+        setMap(map);
+    }, []);
+
+    const onUnmount = useCallback(function callback(map) {
+        setMap(null);
+    }, []);
 
     useEffect(() => {
-        if (mapRef.current) {
-            const mapInstance = mapRef.current.leafletElement || mapRef.current;
-
+        if (map) {
             if (selectedNewsItem && selectedNewsItem.locations && selectedNewsItem.locations.latitude && selectedNewsItem.locations.longitude) {
                 const { latitude, longitude } = selectedNewsItem.locations;
                 const zoomLevel = 15;
-                mapInstance.flyTo([latitude, longitude], zoomLevel, {
-                    animate: true,
-                    duration: 0.5
-                });
+                map.panTo({ lat: latitude, lng: longitude });
+                map.setZoom(zoomLevel);
             } else {
-                mapInstance.flyTo(initialCenter, initialZoom, {
-                    animate: true,
-                    duration: 0.5
-                });
+                map.panTo(initialCenter);
+                map.setZoom(initialZoom);
             }
         }
-    }, [selectedNewsItem]);
+    }, [selectedNewsItem, map]);
 
-    const LocationMarker = () => {
-        useMapEvents({
-            click(event) {
-                if (pickingMode) {
-                    const { lat, lng } = event.latlng;
-                    setCoordinates({ lat, lng });
-                }
-            },
-        });
-
-        return coordinates ? (
-            <Marker position={[coordinates.lat, coordinates.lng]}
-                    icon={L.divIcon({
-                        className: 'custom-icon',
-                        html: `<div style="background: url('${process.env.PUBLIC_URL}/icons/picked-map.png') no-repeat center center; background-size: contain; width: 32px; height: 32px;"></div>`,
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 32],
-                    })}>
-            </Marker>
-        ) : null;
+    const handleMapClick = (event) => {
+        if (pickingMode) {
+            const lat = event.latLng.lat();
+            const lng = event.latLng.lng();
+            setCoordinates({ lat, lng });
+        }
     };
 
     const renderMarkers = () => {
         if (!locationMarkers || !Array.isArray(locationMarkers)) return null;
         return locationMarkers.map((coords, index) => {
             const { latitude, longitude, item } = coords;
-            const iconSize = [30, 30];
-            const isSelected = selectedNewsItem && item._id === selectedNewsItem._id;
-            let customIcon;
-            const categories = ["Access", "Aid", "Diplomatic", "Facilities", "Financial", "Food", "Fuel", "Humanitarian", "International Relations", "Medical Supplies", "Military", "Population", "Security", "Trucks", "Water", "Health"];
-            const normalizedSelectedSubCategory = item.category ? item.category.toLowerCase() : '';
-            const normalizedCategories = categories.map(category => category.toLowerCase());
-            const iconFileName = normalizedCategories.includes(normalizedSelectedSubCategory) ? `icon-${item.category}.png` : 'icon-other.png';
 
-            let zIndexOffset = 0;
-
-            if (isSelected) {
-                zIndexOffset = 1000;
-                customIcon = L.divIcon({
-                    className: 'shining-icon',
-                    html: `
-                    <svg width="50" height="50" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                        <image href="${process.env.PUBLIC_URL}/icons/${iconFileName}" width="32" height="32" />
-                        <circle cx="16" cy="16" r="14" fill="none" stroke="yellow" stroke-width="2">
-                            <animate attributeName="r" values="14;16;14" dur="2s" repeatCount="indefinite" />
-                        </circle>
-                    </svg>
-                `
-                });
-            } else {
-                customIcon = L.divIcon({
-                    className: 'custom-icon',
-                    html: `<div style="background: url('${process.env.PUBLIC_URL}/icons/${iconFileName}') no-repeat center center; background-size: contain; width: 32px; height: 32px;"></div>`,
-                    iconSize: iconSize,
-                    iconAnchor: [16, 32],
-                });
+            if (!latitude || !longitude || isNaN(latitude) || isNaN(longitude)) {
+                console.error(`Invalid coordinates for marker: ${latitude}, ${longitude}`);
+                return null;
             }
+
+            const isSelected = selectedNewsItem && item._id === selectedNewsItem._id;
+            const iconUrl = isSelected ? '/icons/icon-selected.png' : `/icons/icon-${item.category}.png`;
 
             return (
                 <Marker
                     key={index}
-                    position={[latitude, longitude]}
-                    icon={customIcon}
-                    zIndexOffset={zIndexOffset}
-                    eventHandlers={{
-                        click: () => {
-                            setSelectedMarker(item);
-                            setSelectedNewsItem(item);
-                        },
+                    position={{ lat: parseFloat(latitude), lng: parseFloat(longitude) }}
+                    icon={{
+                        url: iconUrl,
+                        scaledSize: new window.google.maps.Size(32, 32),
+                        anchor: new window.google.maps.Point(16, 16)
                     }}
-                >
-                    <Tooltip>{item.category}</Tooltip>
-                </Marker>
+                    onClick={() => {
+                        setSelectedMarker(item);
+                        setSelectedNewsItem(item);
+                    }}
+                />
             );
         });
     };
 
-    const renderPolygons = () => {
-        if (!locationPolygons || !Array.isArray(locationPolygons)) return null;
-
-        return locationPolygons.map((polygon, index) => (
-            <Polygon key={index} positions={polygon.coordinates} />
-        ));
-    };
-
     return (
         <div className="map-wrapper" style={{ position: 'relative', height: '100%', width: '100%' }}>
-            <MapContainer
-                ref={mapRef}
-                center={initialCenter}
-                zoom={initialZoom}
-                style={{ height: '100%', width: '100%' }}
-                doubleClickZoom={false} // Disable default double-click zoom
-            >
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-                {renderMarkers()}
-                {renderPolygons()}
-                <LocationMarker />
-            </MapContainer>
+            <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+                <GoogleMap
+                    mapContainerStyle={containerStyle}
+                    center={initialCenter}
+                    zoom={initialZoom}
+                    onLoad={onLoad}
+                    onUnmount={onUnmount}
+                    onClick={handleMapClick}
+                >
+                    {renderMarkers()}
+                </GoogleMap>
+            </LoadScript>
             {selectedMarker && (
                 <Box sx={{
                     position: 'absolute',
