@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import Box from '@mui/material/Box';
 import MarkerDetailCard from './MarkerDetailCard';
 
-const initialCenter = { lat: 32.6953, lng: 73.7353 };
-const initialZoom = 2;
+const initialCenter = { lat: 30.2081, lng: 10.5754 };
+const initialZoom = 2.5;
 
 const containerStyle = {
     width: '100%',
@@ -78,7 +78,7 @@ const MapComponent = ({ locationPolygons, locationMarkers, selectedNewsItem, set
 
     return (
         <div className="map-wrapper" style={{ position: 'relative', height: '100%', width: '100%' }}>
-            <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+            <LoadScript googleMapsApiKey="AIzaSyB58Qcg2jefEBs5hR12S8cRNgr29WR32e4">
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={initialCenter}
@@ -86,6 +86,8 @@ const MapComponent = ({ locationPolygons, locationMarkers, selectedNewsItem, set
                     onLoad={onLoad}
                     onUnmount={onUnmount}
                     onClick={handleMapClick}
+                    mapTypeId="satellite" // Set map type to satellite
+                    options={{ gestureHandling: 'auto' }} // Enable default zoom behavior
                 >
                     {renderMarkers()}
                 </GoogleMap>
